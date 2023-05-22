@@ -1,0 +1,189 @@
+{% extends 'dashboard.html' %}
+
+{% block style %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-5">
+
+      <form class="row mt-5 pt-5" id="form">
+        <div class="col-12 col-lg-6 offset-lg-2">
+          <div class="input-group">
+            <input type="text" class="form-control" id="name" placeholder="Add a item" name="name" required>
+            <button type="button"    id="save" class="save saves text-white btn btn-info"  name=" " >save</button>
+          </div>
+        </div>
+      </form>
+ 
+
+       <div class="row my-5">
+        <div class="col-12 col-lg-6 offset-lg-2">
+          <table id="myTable">
+              <tr>
+                  <th>company name</th>
+                  <th>operations</th>
+              </tr>
+              {% for q in name %}
+               <tr id="{{ q.id }}">
+                <td>{{q.name}}</td>
+
+
+                   <td><button type="button"   class="btn-delete btn btn-primary" id="delete" name="btn-delete "> <a href="{% url 'delete' q.id %}" style="text-decoration:none; color:white;">delete </a> </button></td>
+                   <td><button type="button"  onclick="loadDoc(this.value)" value="{{q.name}}" class="edit btn btn-primary" data-sid="{{ q.id }} id="btn_change" name="btn_change"  >edit</button></td>
+<!--                   <td><a href="{% url 'delete' q.id %}">delete</a></td>-->
+              </tr>
+             {% endfor %}
+          </table>
+
+        </div>
+      </div>
+
+
+    </div>
+
+{% endblock %}
+{% block script %}
+<script>
+// $("#btn_change").click(function(){
+//    alert(this.value);
+// });
+// -function myFunction(value){
+// var inputVal=document.getElementById("name").value;
+// console.log(inputVal(value));
+// alert(value);
+// }
+// $(document).ready(function(){
+// $("#myTable").on('click','.edit',function(){
+// var currentRow=$(this).closest("tr");
+// var col = currentRow.find("td:eq(0)").text();
+// $("#name").val(col)
+// $("#save").show();
+// });
+// })
+ 
+//           //  $("#save").click(function() { // add event listener for Save button
+//           //   var editedValue = $("#name").val(); // get the edited value from the input field
+//           //   currentRow.find("td:eq(0)").text(editedValue); // update the table cell with the new value
+//           //   $("#name").val(""); // clear the input field
+            
+
+         
+// });
+
+
+
+
+// $("#form").button(function(event){
+//           event.preventDefault();
+//           var editedValue = $("#name").val(col);
+//           alert(editedValue);            
+//           $.ajax({
+//                 url: "update_table",
+//                 method: "POST",
+//                 data: {
+//                     id: currentRow.attr("id"),
+//                     value: editedValue,
+//                     csrfmiddlewaretoken: '{{ csrf_token }}',
+//                 },
+//                 success: function(response){
+//                     console.log(response);
+//                     var editedValue = $("#name").val(col);
+//                     currentRow.find("td:eq(0)").text(editedValue);
+//                     $("#name").val("");
+//                     $("#save").hide();
+//                 },
+//                 error: function(xhr, status, error){
+//                     console.error(error);
+//                 }
+//             });
+
+
+
+
+//         });
+
+
+function loadDoc(data){
+  // alert(data);
+  $('#name').val(data);
+}
+
+$(document).ready(function(){
+$("#myTable").on('click','.btn-delete',function(){
+$(this).closest("tr").remove(q.id);
+});
+});
+
+
+$(document).ready(function(){
+$("#myTable").on('click','.edit',function(){
+  document.getElementById("save").innerHTML = "update";
+});
+});
+
+
+
+$('#save').click(function(){
+  var button = document.getElementById("save");
+  if(button.innerHTML=="save")
+  {
+    // alert("save");
+  save_data();
+
+  }
+  else{
+    alert("update");
+  //  update_data();
+}
+});
+
+
+function save_data() {
+
+            
+            // let name = $("#name").val(data)
+           var data={name:"hello"}  
+            // var mydata = {
+            //  name:name
+
+            //   }
+
+   $.ajax({url: "{% url 'todo' %}",
+        method:"POST",
+        data:mydata,
+    
+        contentType: "application/json",
+        dataType: "json",
+        success: function(data){
+          
+          console.log(data);
+            
+            $("#name").val(data.name)
+              
+          console.log(data);
+
+
+        },
+    })
+   }
+
+
+  
+  
+
+function update_data(){
+  alert("updates")
+  
+}
+  
+</script>
+{% endblock %}
+
+
+
+

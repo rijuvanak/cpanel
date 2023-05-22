@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Template</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <!-- Category dropdown -->
+    <select id="category">
+        {% for category in categories %}
+        <option value="{{ category.id }}">{{ category.name }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Subcategory dropdown -->
+    <select id="subcategory"></select>
+
+    <!-- jQuery code -->
+    <script>
+    $(document).ready(function() {
+        // When category is selected, load subcategories using AJAX
+        $('#category').change(function() {
+            var category_id = $(this).val();
+            $.ajax({
+                url: '/get_subcategories/',
+                data: {'category_id': category_id},
+                dataType: 'json',
+                success: function(data) {
+                    $('#subcategory').empty();
+                    $.each(data.subcategories, function(index, subcategory) {
+                        $('#subcategory').append('<option value="' + subcategory.id + '">' + subcategory.name + '</option>');
+                    });
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>

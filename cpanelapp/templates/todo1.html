@@ -1,0 +1,232 @@
+{% extends 'dashboard.html' %}
+
+
+{% block style %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+{% endblock %}
+
+
+
+
+{% block content %}
+   
+    <section class="intro">
+        <div class="bg-image h-100 border" style="background-color: #e2e2e2;">
+          <div class="mask d-flex mt-5 h-100">
+            <div class="container border">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-12 col-sm-12">
+                        <h1 class="text-center mb-4 fs-3 fw-light" style="font-family: poppins;">Add New Items</h1>
+    
+                        <form id="form" class="form-group">
+                            <input type="hidden" id="id" name="id">
+                            <input type="text" name="name" id="name" class="form-control mb-2 border" placeholder="Full Name">
+                            <input type="submit" id="btnsave" class=" btn w-100 btn-success" value="Submit ">
+                        </form>
+                        <!-- <hr> -->
+                        <!-- <p id="error"><strong class="text-danger"></strong></p> -->
+                    </div>
+                <div class="col-lg-8 col-md-12 col-sm-12">
+                    <h1 class="text-center mb-4 fs-3 fw-light" style="font-family: poppins;">All listed items</h1>
+                  <div class="card shadow-2-strong border" style="background-color: #ffffff;">
+                    <div class="card-body">
+                      <div class="table-responsive">
+                        <table class="table table-borderless mb-0">
+                          <thead>
+                            <tr>
+                              
+                              <th scope="col">S/N</th>
+                              <th scope="col">Name</th>
+                              
+                              <th scope="col">Action</th>
+                            </tr>
+                          </thead>
+
+                          <tbody id="tbody">
+                            
+                            {% for s in obj %}
+                                
+                            <tr>
+                              
+                              <td>{{forloop.counter}}</td>
+                              <td>{{s.name|title}}</td>
+                             
+                              <td>
+                                  <input type="button"  onclick="loadDoc()" value="Edit" class="edit btn btn-primary btn-sm btn-edit px-3" data-sid="{{ s.id }}">
+                                  <input type="button" value="Delete" class="btn btn-danger btn-sm btn-del px-3" data-sid="{{ s.id }}">
+                                  
+                                
+                              </td>
+                            </tr>
+                            {% endfor %}
+                            
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"> </script>
+      
+
+      {% endblock %}
+{% block script %}
+      <script>
+        $("#btnsave").click(function(e) {
+            e.preventDefault()
+            // console.log("Save Button Is Clicked1");
+
+            output = ""
+            let id = $('#id').val();
+            let name = $("#name").val()
+           
+
+            // console.log(name);
+            // console.log(email);
+            // console.log(major);
+
+           if (name === "") {
+              alert("Please enter a Parts Category.");
+            return;
+            }
+        
+             else {
+                // console.log("Student Created");
+                // console.log(name);
+                // console.log(email);
+                // console.log(major);
+                $('#btnsave').val('Submit');
+                mydata = {id:id, name:name}
+
+                $.ajax({
+                    url: "{% url 'save-file1' %}",
+                    type: "POST",
+                    data: mydata,
+                    success: function(data){
+                        console.log("Status:", data.status);
+
+                        x = data.student_data
+                        if(data.status == "Saved"){
+                            console.log("Sending Data...");
+                            for(i=1; i<x.length; i++){
+                                output += "<tr><td>" + i +
+                                    "</td><td>" + x[i].name +
+                    
+                                    "</td><td> <input type='button' value='Edit' class='btn btn-primary btn-edit btn-sm px-3' data-sid= "+ x[i].id + "> <input type='button' value='Delete' class='btn btn-danger btn-sm btn-del px-3' data-sid= "+ x[i].id + ">"
+                            }
+                            $('#name').val("");
+                            $("#tbody").html(output);
+                            $('#id').val('');
+                            $('#form')[0].reset();
+
+                        }
+
+                    }
+                })
+            }
+        })
+
+
+
+
+      $("#tbody").on("click", ".btn-del", function(){
+          console.log("Delete Button was clicked");
+          let id = $(this).attr("data-sid")
+          mydata = {id:id}
+          mythis = $(this)
+          $.ajax({
+            url: "{% url 'delete-file1' %}",
+            method: "POST",
+            data: mydata,
+            success: function(data){
+              console.log(data)
+              if(data.status == 1){
+                console.log("Item Deleted.")
+                $(mythis).closest("tr").fadeOut();
+              }
+              if(data.status == 0){
+                log("Item Was Unable to be Delete")
+              }
+            }
+          })
+        })
+
+
+        // // Editing items
+        // $("#tbody").on("click", ".btn-edit", function(){
+        //   console.log("Edit button is clicked!");
+        //   let id = $(this).attr("data-sid")
+        //   console.log("This is the ID:", id);
+        //   mydata = {id:id}
+
+        //   $.ajax({
+        //     url: "{% url 'edit-file1' %}",
+        //     method: "POST",
+        //     data: mydata,
+
+        //     success: function(data){
+        //       $("#id").val(data.id)
+        //       $("#name").val(data.name)
+              
+        //     },
+            
+        //   })
+        // })
+        
+          
+// Edit
+$('#tbody').on("click", ".btn-edit", function(){
+    console.log("Edit Button Cliked");
+    
+    let id = $(this).attr("data-sid");
+
+    console.log(id);
+    $('#btnsave').val('Update');
+    mydata = {id:id}
+
+    $.ajax({
+        url: "{% url 'edit-file1' %}",
+        method:"POST",
+        data:mydata,
+
+        success: function(data){
+            console.log(data);
+            $("#id").val(data.id)
+              $("#name").val(data.name)
+            
+            console.log(data.id);
+
+
+        },
+    })
+})
+
+
+
+
+
+// function loadDoc() {
+//     {
+//       document.getElementById("btnsave").innerHTML = "update";
+//     };
+// }
+
+// function loadDoc() {
+// $("#tbody").on('click',".btn-edit",function(){
+//   document.getElementById("btnsave").innerHTML = "update";
+// });
+
+// }
+
+
+      </script>
+ {% endblock %}
